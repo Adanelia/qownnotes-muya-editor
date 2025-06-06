@@ -1,0 +1,4 @@
+[submodule "src/muya"]
+	path = src/muya
+	url = https://github.com/Adanelia/muya
+	branch = webpack

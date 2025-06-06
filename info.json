@@ -1,0 +1,11 @@
+{
+  "name": "Muya Editor",
+  "identifier": "muya-editor",
+  "script": "muya-editor.qml",
+  "resources": ["muya-editor-window.qml", "muya-editor.html", "lib"], 
+  "version": "0.0.1",
+  "platforms": ["linux", "macos", "windows"],
+  "minAppVersion": "20.0.0",
+  "authors": ["@Adanelia"],
+  "description" : "Github: <a href='https://github.com/Adanelia/qownnotes-muya-editor'>qownnotes-muya-editor</a>\n<a href='https://github.com/marktext/muya'>Muya</a> Markdown Editor(@marktext) Integration.\n This script creates a custom action to enable Muya Editor.\nIf enabled, automatically show Muya Editor window when note opened."
+}

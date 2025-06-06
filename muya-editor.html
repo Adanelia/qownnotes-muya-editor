@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Muya Editor</title>
+    
+    <!-- 加载本地 Muya 样式 -->
+    <link rel="stylesheet" href="lib/muya/index.min.css">
+    
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        #editor {
+            flex: 1;
+            overflow: auto;
+            height: 100%;
+            width: 100%;
+            box-sizing: border-box;
+            outline: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- 编辑器容器 -->
+    <div id="editor"></div>
+
+    <!-- 引入 WebChannel 脚本 -->
+    <script src="qrc:/qtwebchannel/qwebchannel.js"></script>
+    
+    <!-- 引入本地 Intl.Segmenter polyfill -->
+    <script src="lib/intl-segmenter-polyfill/dist/bundled.js"></script>
+    
+    <!-- 引入本地 Muya 库 -->
+    <script src="lib/muya/index.min.js"></script>
+    
+    <script>
+        // 初始化 WebChannel
+        var qmlBridge;
+        new QWebChannel(qt.webChannelTransport, function(channel) {
+            qmlBridge = channel.objects.qmlBridge;
+        });
+
+        // 应用 Intl.Segmenter polyfill
+        if (!Intl.Segmenter) {
+            Intl.Segmenter = IntlSegmenterPolyfill;
+        }
+
+        // Muya 编辑器实例
+        var muya = null;
+        
+        // 获取 Muya 导出对象
+        const Muya = window.Muya.Muya;
+        const EmojiSelector = window.Muya.EmojiSelector;
+        const InlineFormatToolbar = window.Muya.InlineFormatToolbar;
+        const ImageEditTool = window.Muya.ImageEditTool;
+        const ImageToolBar = window.Muya.ImageToolBar;
+        const ImageResizeBar = window.Muya.ImageResizeBar;
+        const CodeBlockLanguageSelector = window.Muya.CodeBlockLanguageSelector;
+        const ParagraphFrontButton = window.Muya.ParagraphFrontButton;
+        const ParagraphFrontMenu = window.Muya.ParagraphFrontMenu;
+        const TableColumnToolbar = window.Muya.TableColumnToolbar;
+        const ParagraphQuickInsertMenu = window.Muya.ParagraphQuickInsertMenu;
+        const TableDragBar = window.Muya.TableDragBar;
+        const TableRowColumMenu = window.Muya.TableRowColumMenu;
+        const PreviewToolBar = window.Muya.PreviewToolBar;
+        const zh = window.Muya.zh;
+        
+        // 初始化 Muya 编辑器
+        function initMuya(fontSize) {
+            const container = document.getElementById('editor');
+            window.muya = new Muya(container, {
+                markdown: '',
+                focusMode: false,
+                fontSize: fontSize,
+                theme: 'light',
+                preferLooseListItem: false
+            });
+            
+            // 应用中文语言包
+            muya.locale(zh);
+            
+            // 初始化插件
+            Muya.use(EmojiSelector);
+            Muya.use(InlineFormatToolbar);
+            Muya.use(ImageEditTool);
+            Muya.use(ImageToolBar);
+            Muya.use(ImageResizeBar);
+            Muya.use(CodeBlockLanguageSelector);
+            Muya.use(ParagraphFrontButton);
+            Muya.use(ParagraphFrontMenu);
+            Muya.use(TableColumnToolbar);
+            Muya.use(ParagraphQuickInsertMenu);
+            Muya.use(TableDragBar);
+            Muya.use(TableRowColumMenu);
+            Muya.use(PreviewToolBar);
+            
+            muya.init();
+            
+            // 设置内容变化监听
+            muya.on('json-change', (changes) => {
+                const markdown = muya.getMarkdown();
+                qmlBridge.contentChanged(markdown);
+            });
+            
+            // 通知 QML 初始化完成
+            if (qmlBridge) {
+                qmlBridge.editorStatus('ready');
+            }
+        }
+        
+        // 设置编辑器内容
+        function setEditorContent(content) {
+            if (muya) {
+                muya.setContent(content);
+            }
+        }
+        
+        // 撤销操作
+        function undo() {
+            if (muya) {
+                muya.undo();
+            }
+        }
+        
+        // 重做操作
+        function redo() {
+            if (muya) {
+                muya.redo();
+            }
+        }
+        
+        // 页面加载完成后初始化编辑器
+        document.addEventListener('DOMContentLoaded', function() {
+            // 等待QML设置字体大小
+            setTimeout(() => {
+                if (window.fontSize) {
+                    initMuya(window.fontSize);
+                } else {
+                    initMuya(16);
+                }
+            }, 100);
+            
+            // 添加键盘事件监听
+            document.addEventListener('keydown', function(e) {
+                // Ctrl + Z - 撤销
+                if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+                    e.preventDefault();
+                    undo();
+                }
+                
+                // Ctrl + Y - 重做
+                if ((e.ctrlKey || e.metaKey) && e.key === 'y' && !e.shiftKey) {
+                    e.preventDefault();
+                    redo();
+                }
+            });
+        });
+        
+        // 暴露 API 给 QML
+        window.setMuyaContent = setEditorContent;
+        window.undo = undo;
+        window.redo = redo;
+    </script>
+</body>
+</html>

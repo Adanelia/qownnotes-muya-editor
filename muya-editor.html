@@ -67,6 +67,16 @@
             align-items: center;
             gap: 5px;
         }
+        .search-status {
+            padding: 5px 10px;
+            color: #666;
+            font-size: 14px;
+            min-width: 120px;
+            text-align: center;
+        }
+        .search-status.not-found {
+            color: #e74c3c;
+        }
         .close-button {
             padding: 5px 10px;
             border: 1px solid #ddd;
@@ -99,6 +109,8 @@
         <input type="text" id="replace-input" class="replace-input" placeholder="Replace text...">
         <button id="replace-button" class="search-button">Replace</button>
         <button id="replace-all-button" class="search-button">Replace All</button>
+        
+        <div id="search-status" class="search-status"></div>
         
         <button id="close-button" class="close-button">× Close</button>
     </div>
@@ -218,6 +230,7 @@
             const replaceInput = document.getElementById('replace-input');
             const replaceButton = document.getElementById('replace-button');
             const replaceAllButton = document.getElementById('replace-all-button');
+            const searchStatus = document.getElementById('search-status');
             const closeButton = document.getElementById('close-button');
             
             // 显示工具栏
@@ -235,6 +248,7 @@
                     // 清空搜索框
                     searchInput.value = '';
                     replaceInput.value = '';
+                    searchStatus.textContent = '';
                 }
             }
             
@@ -243,25 +257,30 @@
                 if (!muya) return;
                 
                 const searchValue = searchInput.value;
+                let result = null;
                 if (searchValue) {
                     const isRegexp = regexCheckbox.checked;
-                    muya.search(searchValue, { isRegexp: isRegexp });
+                    result = muya.search(searchValue, { isRegexp: isRegexp });
+                    updateSearchStatus(result);
                 } else {
-                    muya.search('', { isRegexp: false });
+                    result = muya.search('', { isRegexp: false });
+                    searchStatus.textContent = '';
                 }
             }
             
             // 查找上一个
             function findPrevious() {
                 if (muya && searchInput.value) {
-                    muya.find('previous');
+                    const result = muya.find('previous');
+                    updateSearchStatus(result);
                 }
             }
             
             // 查找下一个
             function findNext() {
                 if (muya && searchInput.value) {
-                    muya.find('next');
+                    const result = muya.find('next');
+                    updateSearchStatus(result);
                 }
             }
             
@@ -269,10 +288,11 @@
             function replaceCurrent() {
                 if (muya && searchInput.value && replaceInput.value) {
                     const isRegexp = regexCheckbox.checked;
-                    muya.replace(replaceInput.value, { 
+                    const result = muya.replace(replaceInput.value, { 
                         isSingle: true, 
                         isRegexp: isRegexp 
                     });
+                    updateSearchStatus(result);
                 }
             }
             
@@ -280,10 +300,30 @@
             function replaceAll() {
                 if (muya && searchInput.value && replaceInput.value) {
                     const isRegexp = regexCheckbox.checked;
-                    muya.replace(replaceInput.value, { 
+                    const result = muya.replace(replaceInput.value, { 
                         isSingle: false, 
                         isRegexp: isRegexp 
                     });
+                    updateSearchStatus(result);
+                }
+            }
+            
+            // 更新搜索状态显示
+            function updateSearchStatus(result) {
+                if (!result) {
+                    searchStatus.textContent = '';
+                    return;
+                }
+                
+                const totalMatches = result.matches.length;
+                const currentIndex = result.index;
+                
+                if (totalMatches === 0) {
+                    searchStatus.textContent = 'Phrase not found';
+                    searchStatus.classList.add('not-found');
+                } else {
+                    searchStatus.textContent = `${currentIndex + 1} of ${totalMatches} matches`;
+                    searchStatus.classList.remove('not-found');
                 }
             }
             

@@ -3,7 +3,7 @@
   "identifier": "muya-editor",
   "script": "muya-editor.qml",
   "resources": ["muya-editor-window.qml", "muya-editor.html", "lib"], 
-  "version": "0.0.1",
+  "version": "0.0.2",
   "platforms": ["linux", "macos", "windows"],
   "minAppVersion": "20.0.0",
   "authors": ["@Adanelia"],

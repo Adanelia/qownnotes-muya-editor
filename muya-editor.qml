@@ -50,9 +50,9 @@ QtObject {
         
         // 注册自定义动作
         script.registerCustomAction(
-            "toggleMuyaEditor", 
-            "Toggle Muya Editor", 
-            "Muya Editor", 
+            "toggleMuyaEditor",
+            "Toggle Muya Editor",
+            "Muya Editor",
             "x-office-document"
         );
     }

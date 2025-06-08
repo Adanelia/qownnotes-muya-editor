@@ -288,9 +288,9 @@
             function replaceCurrent() {
                 if (muya && searchInput.value && replaceInput.value) {
                     const isRegexp = regexCheckbox.checked;
-                    const result = muya.replace(replaceInput.value, { 
-                        isSingle: true, 
-                        isRegexp: isRegexp 
+                    const result = muya.replace(replaceInput.value, {
+                        isSingle: true,
+                        isRegexp: isRegexp
                     });
                     updateSearchStatus(result);
                 }
@@ -300,9 +300,9 @@
             function replaceAll() {
                 if (muya && searchInput.value && replaceInput.value) {
                     const isRegexp = regexCheckbox.checked;
-                    const result = muya.replace(replaceInput.value, { 
-                        isSingle: false, 
-                        isRegexp: isRegexp 
+                    const result = muya.replace(replaceInput.value, {
+                        isSingle: false,
+                        isRegexp: isRegexp
                     });
                     updateSearchStatus(result);
                 }

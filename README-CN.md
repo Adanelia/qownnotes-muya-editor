@@ -123,6 +123,7 @@ mv src/muya/packages/core/lib lib/muya
 
 - 在关闭 QOwnNotes 之前必须先关闭 Muya 编辑器，否则下次使用时 QOwnNotes 可能会崩溃一次
 - Muya 编辑器只在打开时读取笔记内容，如果在 QOwnNotes 主编辑器中编辑笔记，需要重新打开 Muya 编辑器以同步内容
+- 搜索不会自动滚动到匹配项
 
 ## 其它
 

@@ -123,6 +123,7 @@ mv src/muya/packages/core/lib lib/muya
 
 - Must close Muya editor before closing QOwnNotes, otherwise QOwnNotes may crash on the next use, but it should recover after that.
 - Muya editor only reads the note content when opened. If you edit the note in the QOwnNotes main editor, you need to reopen Muya to sync the changes.
+- Search doesn't automatically scroll to found text.
 
 ## Other
 
